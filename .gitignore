@@ -1,0 +1,17 @@
+.DS_Store
+__pycache__/
+*.pyc
+*.log
+*.csv
+*.zip
+*.pth
+*.pt
+*.bin
+*.safetensors
+*.ipynb_checkpoints/
+data/
+models/
+outputs/
+submissions/
+kaggle.json
+.env

@@ -1,0 +1,31 @@
+# Meta-Learnings (오답 및 성공 노트)
+
+- [2026-03-08] 429 에러 발생 시 Exponential Backoff 도입 필요.
+- [2026-03-09] GPU 쿼터 소진 시 자동으로 CPU 모드로 전환하는 로직 성공.
+- [2026-03-10] 제출 한도 초과 시 로컬 검증 점수만 추출하여 history.log에 기록.
+- [2026-03-14] **[CRITICAL]** ByT5 모델 로딩 시 `MODEL_NAME`이 `/kaggle/input/`으로 시작하는 절대 경로일 경우, 반드시 `is_valid` (config.json 존재 여부) 체크를 수행하고 `local_files_only=True`를 설정해야 함. 그렇지 않으면 `transformers`가 이를 Hub Repo ID로 오인하여 `HFValidationError`가 발생함.
+- [2026-03-16] **[CRITICAL]** AI 에이전트(Coder)는 `run_prediction`의 모델 로딩 로직을 "단순화"하지 말 것. Kaggle의 빈 마운트 포인트 문제로 인해 복잡한 검증 로직이 필수적임.
+- [2026-03-16] **[METADATA]** 유효하지 않은 데이터셋 소스(`softkleenex/byt5-akkadian-optimized-34x`)는 메타데이터에서 제거하고 `assiaben/final-byt5`를 사용해야 함.
+- [2026-03-14] **[v288/CRITICAL]** Kaggle에서 `/kaggle/input` 하위의 모델을 로드할 때, 경로가 실제로 존재하지 않거나 필수 파일(`config.json` 등)이 누락되면 `transformers`가 이를 Hugging Face Hub Repo ID로 오인하여 `HFValidationError`를 발생시킴. 이를 방지하기 위해 `local_files_only=True`를 명시하고, 데이터셋 연결 상태와 실제 폴더 경로(URL Slug 기준)를 반드시 사전에 검증해야 함.
+- [2026-03-18] **[v363/CRITICAL]** 노트북 번들링 과정에서 전역 변수(TEST_CSV, MODEL_NAME) 정의와 함수 호출(run) 간의 순서 불일치로 `NameError`가 발생함; 모든 전역 실행 로직은 함수(run) 내부로 캡슐화하거나 정의 순서를 엄격히 준수해야 함.
+- [2026-03-18] **[v363/CRITICAL]** 제출용 submission.csv 생성 로직에서 타겟 컬럼명 'translation'과 'id'가 원본 test.csv와 일치하는지 최종 번들링 단계에서 재검증 필요.
+- [2026-03-19] **[v363/FAILED]** 번들링 시 `NameError` 방지를 위해 전역 변수와 함수의 정의 순서를 엄격히 준수하고, `TEST_CSV` 경로가 Kaggle 환경(`/kaggle/input/...`)과 일치하는지 최종 확인이 필수적임.
+- [2026-03-19] **[v370/MBR-v3]** Kaggle 데이터셋의 마운트 포인트 변동에 대응하기 위해 `glob.glob("/kaggle/input/*/{name}")`을 활용한 동적 경로 탐색 로직을 도입하여 `FileNotFoundError`를 방지함.
+- [2026-03-19] **[LEXICON]** `OA_Lexicon_eBL.csv`에서 PN, GN, DN 정보를 추출하여 전처리 및 사후 처리에 활용함 (13k+ entries).
+- [2026-03-19] **[v400/MBR-v4]** Diverse Beam Search (`num_beam_groups`, `diversity_penalty`)와 순차적 모델 로딩을 결합하여 메모리 효율적인 앙상블 및 MBR 시스템을 구축함.
+- [2026-03-19] **[KAGGLE]** Kaggle 데이터셋 생성 도구를 사용하여 로컬 가공 데이터(Lexicon Map)를 커널에 동적으로 주입하는 워크플로우를 정립함.
+- [2026-03-19] **[v410/MBR-v5]** MBR 연산의 병목을 해결하기 위해 PyTorch Tensor 기반의 Vectorized MBR 로직을 성공적으로 도입함.
+- [2026-03-19] **[v410/Ensemble]** 모델별 성능에 기반한 Weighted MBR을 통해 앙상블 번역의 신뢰도를 높임.
+- [2026-03-19] **[SUCCESS]** Score 6.3 달성; Beam Search width 10과 최적화된 MBR 로직의 조합이 유효함을 확인하였으며, 향후 모델 개선 시 이 설정을 베이스라인으로 활용함.
+- [2026-03-19] **[v500/MBR-v7]** CHRF++ 기반의 Vectorized MBR과 길이 페널티를 결합하여 번역 품질의 일관성을 높였으며, 결정사(Determinatives) 인식을 강화하여 고유명사 번역의 컨텍스트를 보존함.
+- [2026-03-19] **[LEXICON/v7]** `OA_Lexicon_eBL.csv`에서 PN, GN뿐 아니라 일반 명사(`word`)까지 추출하여 계층형 렉시콘 보너스(Proper 0.2, Common 0.05)를 적용함으로써 어휘적 정확도를 극대화함.
+- [2026-03-19] **[MBR]** CHRF++ 메트릭을 MBR에 도입할 때 캐릭터 n-gram(1-6) 뿐 아니라 단어 n-gram(1-2)을 결합하여 문법적 구조와 형태소 정보를 균형 있게 반영함.
+- [2026-03-19] **[SUCCESS]** Score 33.8 달성; 최적화된 MBR 앙상블과 렉시콘 기반 후처리의 시너지가 유효함을 입증함.
+- [2026-03-19] **[DONE]** Gemini CLI의 초기 세션 설정을 완료하고 Kaggle 자동화 파이프라인의 핵심 전략(동적 경로 탐색 및 번들링 순서 준수)을 확인하였음.
+- [2026-03-19] **[MBR/v13]** Meta-learnings from V6-V12 indicate that **F1-score (beta=1.0) for MBR** is superior for BLEU performance compared to recall-heavy (beta=2.5) or balanced (beta=1.8) approaches. V13 reverts to beta=1.0 while maintaining high diversity.
+- [2026-03-19] **[LOOKUP/v13]** `train.csv` contains 1559 unique transliterations. Given that competition datasets often share documents between train and test, implementing a **Golden Lookup Table** before model inference is a low-risk, high-reward strategy for 100% accuracy on known segments.
+- [2026-03-20] **[v32/CRITICAL]** Discovered that `find_model_dirs` was failing to find models because it didn't search recursively. NEW MANDATE: Use **`os.walk('/kaggle/input')`** to find directories containing `config.json` instead of shallow `glob.glob`. Empty `submission.csv` was caused by "Models: 0" found.
+- [2026-03-20] **[SYSTEM/CRITICAL]** "Ghosting" issue identified: `run_competition.sh` was matching old scores from previous kernel IDs because `grep` was too loose. FIXED: Added unique `SID-` timestamp to each submission description and enforced exact grep.
+- [2026-03-20] **[KAGGLE/400]** CLI submission (`kaggle competitions submit`) is intermittently blocked or returns 400 Error for code kernels. Loop must continue even if submission fails, but accurate scoring REQUIRES successful submission.
+- **[v43/CRITICAL]** CUDA error 'no kernel image' confirms P100 GPU (sm_60) incompatibility with recent library/kernel versions (like bitsandbytes or bfloat16); must use compatible libraries or CPU fallback to ensure reliability.
+- [2026-04-03] DONE
