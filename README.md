@@ -13,7 +13,8 @@
 ## 📌 Project Overview
 This repository contains the post-mortem analysis and MLOps automation pipeline developed for the Kaggle **Deep Past Initiative: Machine Translation** competition. The objective was to translate ancient Akkadian transliterations into English.
 
-**Status:** Competition Ended (March 23, 2026)  
+**Status:** Competition Ended (March 23, 2026)
+**Competition Period:** December 17, 2025 – March 24, 2026  
 **Public Leaderboard Score:** 33.8 (Top-tier baseline breakthrough)
 
 ---
