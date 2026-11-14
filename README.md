@@ -7,7 +7,7 @@
 
 ## Links
 
-- Blog retrospective: <https://softkleenex.github.io/coding_training/kaggle/kaggle-dpc-tate>
+- Blog retrospective: <https://softkleenex.github.io/posts/kaggle-dpc-tate/>
 - Kaggle profile/project context: <https://www.kaggle.com/softkleenex>
 
 ## 📌 Project Overview
@@ -80,6 +80,6 @@ This project transitioned from a standard NLP translation task into an exercise 
 
 ## Blog
 
-- Blog note: [Translating Ancient Akkadian to English (Kaggle: Deep Past Initiative)](https://softkleenex.github.io/coding_training/kaggle/kaggle-dpc-tate)
+- Blog note: [Translating Ancient Akkadian to English (Kaggle: Deep Past Initiative)](https://softkleenex.github.io/posts/kaggle-dpc-tate/)
 
 <!-- BLOG-URL:END -->
